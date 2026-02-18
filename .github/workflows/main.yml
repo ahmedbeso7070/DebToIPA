@@ -1,0 +1,29 @@
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Set up environment variables
+      env:
+        scheme: "debtoipa"
+        platform: "iOS Simulator"
+        destination_device: "iPhone10,6" # Replace with available device.
+      run: echo "Environment variables set"
+
+    - name: Build and Test
+      run: |
+        device=$(xcrun simctl list devices | grep -oE "iPhone10,6" | head -n 1)
+        if [ -z "$device" ]; then
+          echo "No suitable simulator device found."
+          exit 1
+        fi
+        file_to_build=$(find . -name "*.xcworkspace" -o -name "*.xcodeproj" | head -1)
+        if [ -z "$file_to_build" ]; then
+          echo "No valid Xcode project/workspace file present."
+          exit 1
+        fi
+        xcodebuild build-for-testing \
+          -scheme "$scheme" \
+          -destination "platform=$platform,name=$device"
