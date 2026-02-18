@@ -18,7 +18,7 @@ jobs:
       - name: Ensure Environment Variables
         env:
           scheme: DebToIPA
-          platform: iOS Simulator
+          platform: iOS
         run: |
           if [ -z "$scheme" ]; then
             echo "No scheme defined."
@@ -26,6 +26,9 @@ jobs:
           fi
 
       - name: Build
+        env:
+          scheme: DebToIPA
+          platform: iOS
         run: |
           device=$(xcrun xctrace list devices 2>&1 | grep -oE "iPhone.*?[^\\(]+" | head -1 | awk '{$1=$1;print}' | sed -e "s/ Simulator$//")
           if [ -z "$device" ]; then
@@ -40,6 +43,9 @@ jobs:
           xcodebuild build-for-testing -scheme "$scheme" -destination "platform=$platform,name=$device"
 
       - name: Test
+        env:
+          scheme: DebToIPA
+          platform: iOS
         run: |
           device=$(xcrun xctrace list devices 2>&1 | grep -oE "iPhone.*?[^\\(]+" | head -1 | awk '{$1=$1;print}' | sed -e "s/ Simulator$//")
           if [ -z "$device" ]; then
